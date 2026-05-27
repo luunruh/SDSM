@@ -13,5 +13,12 @@ app.UseStaticFiles(new StaticFileOptions {
                     ),
             RequestPath = "/css"
         });
+app.UseStaticFiles(new StaticFileOptions {
+            FileProvider = new PhysicalFileProvider(
+                        // The pico/css directory. Must be run using 'dotnet run' on the same level as the .csproj file
+                        Path.Combine(Directory.GetCurrentDirectory(), "pico", "scripts")
+                    ),
+            RequestPath = "/js"
+        });
 
 app.Run();
