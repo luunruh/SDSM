@@ -1,7 +1,6 @@
-using SDSM_Server;
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
 
-var builder = Host.CreateApplicationBuilder(args);
-builder.Services.AddHostedService<Worker>();
+app.MapGet("/", () => "Hello World!");
 
-var host = builder.Build();
-host.Run();
+app.Run();
