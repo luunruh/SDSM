@@ -3,22 +3,29 @@ using Microsoft.Extensions.FileProviders;
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
-app.UseDefaultFiles(); // will use index.html
-app.UseStaticFiles(); // will use 'wwwroot' as directory
+string AppPath = System.Reflection.Assembly.GetEntryAssembly()?.Location ?? "";
+string AppDir = Path.GetDirectoryName(AppPath) ?? "";
 
-app.UseStaticFiles(new StaticFileOptions {
-            FileProvider = new PhysicalFileProvider(
-                        // The pico/css directory. Must be run using 'dotnet run' on the same level as the .csproj file
-                        Path.Combine(Directory.GetCurrentDirectory(), "pico", "css")
-                    ),
-            RequestPath = "/css"
-        });
-app.UseStaticFiles(new StaticFileOptions {
-            FileProvider = new PhysicalFileProvider(
-                        // The pico/css directory. Must be run using 'dotnet run' on the same level as the .csproj file
-                        Path.Combine(Directory.GetCurrentDirectory(), "pico", "scripts")
-                    ),
-            RequestPath = "/js"
-        });
+app.UseDefaultFiles(); // will use index.html
+app.UseStaticFiles();
+app.UseFileServer(new FileServerOptions {
+        FileProvider = new PhysicalFileProvider(
+                Path.Combine(AppDir, "static")
+            ),
+        RequestPath = "",
+        EnableDefaultFiles = true
+    });
+app.UseFileServer(new FileServerOptions {
+        FileProvider = new PhysicalFileProvider(
+                Path.Combine(AppDir, "css")
+            ),
+        RequestPath = "/css"
+    });
+app.UseFileServer(new FileServerOptions {
+        FileProvider = new PhysicalFileProvider(
+                Path.Combine(AppDir, "js")
+            ),
+        RequestPath = "/js"
+    });
 
 app.Run();
