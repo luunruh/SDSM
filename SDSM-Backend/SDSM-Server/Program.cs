@@ -27,5 +27,11 @@ app.UseFileServer(new FileServerOptions {
             ),
         RequestPath = "/js"
     });
+app.UseFileServer(new FileServerOptions {
+        FileProvider = new PhysicalFileProvider(
+                Path.Combine(AppDir, "icons")
+            ),
+        RequestPath = "/icons"
+    });
 
 app.Run();

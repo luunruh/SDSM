@@ -17,6 +17,7 @@ tsc -p "$FRONTEND_DIR/ts/tsconfig.json" --outDir "$FRONTEND_DIR/js"
 cp -r "$FRONTEND_DIR/css" "$BUILD_DIR/css"
 cp -r "$FRONTEND_DIR/js" "$BUILD_DIR/js"
 cp -r "$FRONTEND_DIR/static" "$BUILD_DIR/static"
+cp -r "$FRONTEND_DIR/icons" "$BUILD_DIR/icons"
 
 # Build dotnet files
 dotnet build "$BACKEND_DIR/SDSM-Server/SDSM-Server.csproj" -o "$BUILD_DIR"
