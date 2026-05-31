@@ -12,6 +12,10 @@ const themeSwitcher = {
   buttonsTarget: "a[data-theme-switcher]",
   buttonAttribute: "data-theme-switcher",
   rootAttribute: "data-theme",
+  showOnlyTarget: "svg[data-only-show-theme]",
+  showOnlyAttribute: "data-only-show-theme",
+  cssVariableName: "--icon-color",
+  cssVariableValue: "#ffffff",
   localStorageKey: "picoPreferredColorScheme",
 
   // Init
@@ -61,6 +65,13 @@ const themeSwitcher = {
             this._scheme = "dark"
         }
     }
+
+    if (this._scheme == "light") {
+        this.cssVariableValue = "#000000"
+    } else if (this._scheme == "dark") {
+        this.cssVariableValue = "#ffffff"
+    }
+
     this.applyScheme();
     this.schemeToLocalStorage();
   },
@@ -72,7 +83,21 @@ const themeSwitcher = {
 
   // Apply scheme
   applyScheme() {
-    document.querySelector("html")?.setAttribute(this.rootAttribute, this.scheme);
+    var element = document.querySelector("html");
+    element?.setAttribute(this.rootAttribute, this.scheme);
+    element?.style.setProperty(this.cssVariableName, this.cssVariableValue);
+
+    var elements = document.querySelectorAll(this.showOnlyTarget);
+    elements.forEach((el) => {
+        var theme = el.getAttribute(this.showOnlyAttribute);
+        var displayValue = "";
+        if (theme == this._scheme) {
+            displayValue = "block"
+        } else {
+            displayValue = "none"
+        }
+        el.style.setProperty("display", displayValue);
+    })
   },
 
   // Store scheme to local storage
