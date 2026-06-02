@@ -8,3 +8,5 @@ function sidebarButtonClick(): void {
         }
     }
 }
+
+document.getElementById("sidebar-btn")?.addEventListener("click", sidebarButtonClick);
