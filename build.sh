@@ -10,13 +10,13 @@ if [ -d $BUILD_DIR ]; then
 fi
 mkdir $BUILD_DIR && echo "Created directory $BUILD_DIR"
 
-# Compile TypeScript files
-tsc -p "$FRONTEND_DIR/ts/tsconfig.json" --outDir "$FRONTEND_DIR/js"
-
 # Copy CSS and JS files to build dirbuild dir
 cp -r "$FRONTEND_DIR/css" "$BUILD_DIR/css"
 cp -r "$FRONTEND_DIR/js" "$BUILD_DIR/js"
 cp -r "$FRONTEND_DIR/static" "$BUILD_DIR/static"
+
+# Compile TypeScript files
+tsc -p "$FRONTEND_DIR/ts/tsconfig.json" --outDir "$BUILD_DIR/js"
 
 # Build dotnet files
 dotnet build "$BACKEND_DIR/SDSM-Server/SDSM-Server.csproj" -o "$BUILD_DIR"
