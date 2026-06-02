@@ -1,62 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="color-scheme" content="light dark">
-    <title>SDSM</title>
-    <meta name="description" content="Simple Data Storage Manager">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="color-scheme" content="light dark">
+        <title>SDSM</title>
+        <meta name="description" content="Simple Data Storage Manager">
 
-    <!-- Pico.css -->
-    <link
-        rel="stylesheet"
-        href="/css/pico.min.css"
-    >
-    <link
-        rel="stylesheet"
-        href="/css/style.css"
-    >
+        <!-- Pico.css -->
+        <link
+            rel="stylesheet"
+            href="/css/pico.min.css"
+        >
+        <link
+            rel="stylesheet"
+            href="/css/style.css"
+        >
         
-  </head>
+    </head>
 
-  <body>
-    <nav>
-        <ul>
-            <li style="display: flex; align-items: center; padding-left: 1em;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu-icon lucide-menu" data->
-                    <path d="M4 5h16"/>
-                    <path d="M4 12h16"/>
-                    <path d="M4 19h16"/>
-                </svg>
-            </li>
-            <li><strong>SDSM</strong></li>
-        </ul>
-        <ul>
-            <li style="display: flex; align-items: center; padding-right: 1em;">
-                <a href="#" data-theme-switcher="switch">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun-icon lucide-sun" data-only-show-theme="dark">
-                        <circle cx="12" cy="12" r="4"/>
-                        <path d="M12 2v2"/>
-                        <path d="M12 20v2"/>
-                        <path d="m4.93 4.93 1.41 1.41"/>
-                        <path d="m17.66 17.66 1.41 1.41"/>
-                        <path d="M2 12h2"/>
-                        <path d="M20 12h2"/>
-                        <path d="m6.34 17.66-1.41 1.41"/>
-                        <path d="m19.07 4.93-1.41 1.41"/>
-                    </svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon-icon lucide-moon" data-only-show-theme="light">
-                        <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/>
-                    </svg>
-                </a>
-            </li>
-        </ul>
-    </nav>
+    <body>
+        <div style="display: flex;">
+            <div id="globalSidenav" class="sidenav">
+                <a href="#">test</a>
+                <a href="#">test</a>
+                <a href="#">test</a>
+            </div>
+            <div style="flex-grow: 1; padding-left: 1em;">
+                <nav>
+                    <ul>
+                        <li style="display: flex; align-items: center">
+                            <a href="#" onclick="sidebarButtonClick()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu-icon lucide-menu" data->
+                                    <path d="M4 5h16"/>
+                                    <path d="M4 12h16"/>
+                                    <path d="M4 19h16"/>
+                                </svg>
+                            </a>
+                        </li>
+                        <li><strong>SDSM</strong></li>
+                    </ul>
+                    <ul>
+                        <li style="display: flex; align-items: center; padding-right: 1em;">
+                            <a href="#" data-theme-switcher="switch">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun-icon lucide-sun" data-only-show-theme="dark">
+                                    <circle cx="12" cy="12" r="4"/>
+                                    <path d="M12 2v2"/>
+                                    <path d="M12 20v2"/>
+                                    <path d="m4.93 4.93 1.41 1.41"/>
+                                    <path d="m17.66 17.66 1.41 1.41"/>
+                                    <path d="M2 12h2"/>
+                                    <path d="M20 12h2"/>
+                                    <path d="m6.34 17.66-1.41 1.41"/>
+                                    <path d="m19.07 4.93-1.41 1.41"/>
+                                </svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon-icon lucide-moon" data-only-show-theme="light">
+                                    <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/>
+                                </svg>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                <div id="current-path">/</div>
+                <ul id="file-list"></ul>
+            </div>
+        </div>
 
-    <!-- Minimal theme switcher -->
-    <script src="js/minimal-theme-switcher.js"></script>
+        <!-- Minimal theme switcher -->
+        <script src="js/minimal-theme-switcher.js"></script>
 
-    <!-- Modal -->
-    <script src="js/modal.js"></script>
-  </body>
+        <script type="module" src="js/sidenav.js"></script>
+        <script type="module" src="js/file_system.js"></script>
+    </body>
 </html>

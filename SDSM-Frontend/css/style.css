@@ -3,3 +3,17 @@ svg {
     width: 1em;
     height: 1em;
 }
+
+.sidenav {
+    height: 100%;
+    width: 200px;
+    top: 0;
+    left: 0;
+    overflow-x: hidden;
+}
+
+.sidenav a {
+    display: block;
+    padding: 1em 1em 1em 4em;
+    text-decoration: none;
+}
