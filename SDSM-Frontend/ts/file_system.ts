@@ -46,14 +46,23 @@ async function loadFiles(path: string): Promise<void> {
         typeValue.textContent = `${entry.isDirectory ? "d" : "f"}`;
         row.appendChild(typeValue);
         const nameValue = document.createElement("td");
-        nameValue.textContent = entry.name;
         row.appendChild(nameValue);;
 
         if (entry.isDirectory) {
-            nameValue.style.cursor = "pointer";
+            nameValue.style.cursor = "pointer"
+            nameValue.textContent = entry.name;
             nameValue.addEventListener("click", () => {
                 loadFiles(path ? `${path}/${entry.name}` : entry.name);
             });
+        } else {
+            const a = document.createElement("a");
+            a.href = "downloadfile";
+            if (currentPath != "") {
+                a.href += "/" + currentPath;
+            }
+            a.href += "/" + entry.name;
+            a.textContent = entry.name;
+            nameValue.appendChild(a);
         }
 
         table.appendChild(row);
