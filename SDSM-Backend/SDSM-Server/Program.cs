@@ -37,7 +37,7 @@ app.MapGet("/files", () => {
             List<Models.FileSystemEntry> entries = new List<Models.FileSystemEntry>();
             foreach (string name in Directory.GetFileSystemEntries(rootDir)) {
                 entries.Add(new Models.FileSystemEntry { 
-                        Name = name,
+                        Name = Path.GetFileName(name),
                         IsDirectory = Directory.Exists(name)
                     });
             }
@@ -49,7 +49,7 @@ app.MapGet("/files/{*path}", (string path) => {
             // TODO: Fix path traversal
             foreach (string name in Directory.GetFileSystemEntries(Path.Combine(rootDir, path))) {
                 entries.Add(new Models.FileSystemEntry { 
-                        Name = name,
+                        Name = Path.GetFileName(name),
                         IsDirectory = Directory.Exists(name)
                     });
             }
