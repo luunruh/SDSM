@@ -6,7 +6,10 @@ if (args.Length == 1) {
 }
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddControllers();
+builder.Services.AddSingleton(new Config { RootDir =  rootDir});
 var app = builder.Build();
+app.MapControllers();
 
 string AppPath = System.Reflection.Assembly.GetEntryAssembly()?.Location ?? "";
 string AppDir = Path.GetDirectoryName(AppPath) ?? "";
@@ -32,28 +35,5 @@ app.UseFileServer(new FileServerOptions {
             ),
         RequestPath = "/js"
     });
-
-app.MapGet("/files", () => {
-            List<Models.FileSystemEntry> entries = new List<Models.FileSystemEntry>();
-            foreach (string name in Directory.GetFileSystemEntries(rootDir)) {
-                entries.Add(new Models.FileSystemEntry { 
-                        Name = Path.GetFileName(name),
-                        IsDirectory = Directory.Exists(name)
-                    });
-            }
-            return Results.Ok(entries);
-        });
-
-app.MapGet("/files/{*path}", (string path) => {
-            List<Models.FileSystemEntry> entries = new List<Models.FileSystemEntry>();
-            // TODO: Fix path traversal
-            foreach (string name in Directory.GetFileSystemEntries(Path.Combine(rootDir, path))) {
-                entries.Add(new Models.FileSystemEntry { 
-                        Name = Path.GetFileName(name),
-                        IsDirectory = Directory.Exists(name)
-                    });
-            }
-            return Results.Ok(entries);
-        });
 
 app.Run();
