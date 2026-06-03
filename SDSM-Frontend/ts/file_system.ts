@@ -10,32 +10,52 @@ async function loadFiles(path: string): Promise<void> {
     const response = await fetch(`/files/${path}`);
     const entries: FileSystemEntry[] = await response.json();
 
-    const list = document.getElementById("file-list")!;
-    list.innerHTML = "";
+    const table = document.getElementById("file-table")!;
+    table.innerHTML = "";
+    const tableHeader = document.createElement("tr");
+    const type = document.createElement("th");
+    type.textContent = "Type";
+    const name = document.createElement("th");
+    name.textContent = "Name";
+    tableHeader.appendChild(type);
+    tableHeader.appendChild(name);
+    table.appendChild(tableHeader);
 
     if (path !== "") {
-        const up = document.createElement("li");
-        up.textContent = "d ..";
-        up.style.cursor = "pointer";
-        up.addEventListener("click", () => {
+        const row = document.createElement("tr");
+        table.appendChild(row);
+        const typeValue = document.createElement("td");
+        typeValue.textContent = "d";
+        row.appendChild(typeValue);
+        const nameValue = document.createElement("td");
+        nameValue.textContent = "..";
+        nameValue.style.cursor = "pointer";
+        row.appendChild(nameValue);
+
+        nameValue.addEventListener("click", () => {
             const parent = path.substring(0, path.lastIndexOf("/"));
             loadFiles(parent);
         });
-        list.appendChild(up);
     }
 
     for (const entry of entries) {
-        const li = document.createElement("li");
-        li.textContent = `${entry.isDirectory ? "d" : "f"} ${entry.name}`;
+        const row = document.createElement("tr");
+        table.appendChild(row);
+        const typeValue = document.createElement("td");
+        typeValue.textContent = `${entry.isDirectory ? "d" : "f"}`;
+        row.appendChild(typeValue);
+        const nameValue = document.createElement("td");
+        nameValue.textContent = entry.name;
+        row.appendChild(nameValue);;
 
         if (entry.isDirectory) {
-            li.style.cursor = "pointer";
-            li.addEventListener("click", () => {
+            nameValue.style.cursor = "pointer";
+            nameValue.addEventListener("click", () => {
                 loadFiles(path ? `${path}/${entry.name}` : entry.name);
             });
         }
 
-        list.appendChild(li);
+        table.appendChild(row);
     }
 }
 
