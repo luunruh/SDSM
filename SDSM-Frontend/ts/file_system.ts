@@ -15,6 +15,7 @@ async function loadFiles(path: string): Promise<void> {
     const tableHeader = document.createElement("tr");
     const type = document.createElement("th");
     type.textContent = "Type";
+    type.style.width = "4em";
     const name = document.createElement("th");
     name.textContent = "Name";
     tableHeader.appendChild(type);
