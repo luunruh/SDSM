@@ -8,6 +8,8 @@ namespace Plugins
         public string? Backend { get; set; }
         public string? Ui { get; set; }
         public NavEntry? Nav { get; set; }
+        /// Sidebar/default-plugin ordering; lower comes first.
+        public int Order { get; set; } = 100;
 
         public class NavEntry
         {

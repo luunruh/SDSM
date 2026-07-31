@@ -1,0 +1,9 @@
+{
+  "id": "diagnostics",
+  "name": "System-Diagnostics",
+  "version": "0.1.0",
+  "backend": "backend/SDSM.Plugin.Diagnostics.dll",
+  "ui": "ui/main.js",
+  "nav": { "title": "System", "icon": "activity" },
+  "order": 20
+}

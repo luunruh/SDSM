@@ -9,7 +9,10 @@ public class PluginsController : ControllerBase
     [Route("")]
     public IResult GetPlugins(PluginLoader loader)
     {
-        return Results.Ok(loader.Plugins.Select(p => new
+        return Results.Ok(loader.Plugins
+            .OrderBy(p => p.Manifest.Order)
+            .ThenBy(p => p.Manifest.Id, StringComparer.Ordinal)
+            .Select(p => new
         {
             id = p.Manifest.Id,
             name = p.Manifest.Name,
@@ -18,6 +21,6 @@ public class PluginsController : ControllerBase
             nav = p.Manifest.Nav != null
                 ? new { title = p.Manifest.Nav.Title, icon = p.Manifest.Nav.Icon }
                 : null,
-        }));
+            }));
     }
 }

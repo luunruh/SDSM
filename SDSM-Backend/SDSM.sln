@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDSM-Server.Tests", "SDSM-S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDSM.TestPlugin", "SDSM.TestPlugin\SDSM.TestPlugin.csproj", "{78BDFE49-3482-428B-8223-A7B321E7AF4D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDSM.Plugin.Diagnostics", "..\SDSM-Plugins\diagnostics\backend\SDSM.Plugin.Diagnostics.csproj", "{C49D6618-0A03-4F8D-A29C-F4A224EC67B8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -66,6 +68,18 @@ Global
 		{78BDFE49-3482-428B-8223-A7B321E7AF4D}.Release|x64.Build.0 = Release|Any CPU
 		{78BDFE49-3482-428B-8223-A7B321E7AF4D}.Release|x86.ActiveCfg = Release|Any CPU
 		{78BDFE49-3482-428B-8223-A7B321E7AF4D}.Release|x86.Build.0 = Release|Any CPU
+		{C49D6618-0A03-4F8D-A29C-F4A224EC67B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C49D6618-0A03-4F8D-A29C-F4A224EC67B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C49D6618-0A03-4F8D-A29C-F4A224EC67B8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C49D6618-0A03-4F8D-A29C-F4A224EC67B8}.Debug|x64.Build.0 = Debug|Any CPU
+		{C49D6618-0A03-4F8D-A29C-F4A224EC67B8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C49D6618-0A03-4F8D-A29C-F4A224EC67B8}.Debug|x86.Build.0 = Debug|Any CPU
+		{C49D6618-0A03-4F8D-A29C-F4A224EC67B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C49D6618-0A03-4F8D-A29C-F4A224EC67B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C49D6618-0A03-4F8D-A29C-F4A224EC67B8}.Release|x64.ActiveCfg = Release|Any CPU
+		{C49D6618-0A03-4F8D-A29C-F4A224EC67B8}.Release|x64.Build.0 = Release|Any CPU
+		{C49D6618-0A03-4F8D-A29C-F4A224EC67B8}.Release|x86.ActiveCfg = Release|Any CPU
+		{C49D6618-0A03-4F8D-A29C-F4A224EC67B8}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

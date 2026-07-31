@@ -3,5 +3,6 @@
   "name": "Explorer",
   "version": "0.1.0",
   "ui": "ui/main.js",
-  "nav": { "title": "Explorer", "icon": "folder" }
+  "nav": { "title": "Explorer", "icon": "folder" },
+  "order": 10
 }

@@ -43,6 +43,8 @@ plugins/
 - `backend`: relativer Pfad zur Assembly; weglassen bei UI-only-Plugins.
 - `ui`: relativer Pfad zum ES-Modul-Einstieg; weglassen bei Headless-Plugins.
 - `nav`: optional; erzeugt einen Sidebar-Eintrag in der Shell.
+- `order`: optional (Default 100); sortiert Sidebar und bestimmt das
+  Standard-Plugin (kleinster Wert mit UI).
 
 ## Registrierung & Lifecycle
 
