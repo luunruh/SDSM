@@ -1,0 +1,51 @@
+.explorer-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1em;
+    padding: 0.75em 0;
+}
+
+.explorer-breadcrumb {
+    font-weight: bold;
+}
+
+.explorer-breadcrumb a {
+    text-decoration: none;
+}
+
+.explorer-stats {
+    color: var(--pico-muted-color);
+    font-size: 0.85em;
+}
+
+.explorer-table {
+    width: 100%;
+}
+
+.explorer-table th {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.75em;
+    color: var(--pico-muted-color);
+}
+
+.explorer-table a {
+    text-decoration: none;
+}
+
+.explorer-col-icon {
+    width: 2em;
+}
+
+.explorer-col-icon svg {
+    width: 1.1em;
+    height: 1.1em;
+    vertical-align: middle;
+    color: var(--pico-muted-color);
+}
+
+.explorer-col-meta {
+    color: var(--pico-muted-color);
+    font-family: monospace;
+    white-space: nowrap;
+}

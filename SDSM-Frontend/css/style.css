@@ -4,16 +4,84 @@ svg {
     height: 1em;
 }
 
-.sidenav {
-    height: 100%;
-    width: 200px;
-    top: 0;
-    left: 0;
-    overflow-x: hidden;
+.app {
+    display: flex;
+    min-height: 100vh;
 }
 
-.sidenav a {
-    display: block;
-    padding: 1em 1em 1em 4em;
+.sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    overflow-x: hidden;
+    border-right: 1px solid var(--pico-muted-border-color);
+    transition: width 0.15s ease;
+}
+
+.sidebar.collapsed {
+    width: 0;
+    border-right: none;
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    padding: 1em;
+    font-size: 1.1em;
+    white-space: nowrap;
+}
+
+.sidebar-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.7em;
+    height: 1.7em;
+    border-radius: 0.4em;
+    background: var(--pico-primary);
+    color: var(--pico-primary-inverse);
+    font-weight: bold;
+}
+
+.sidebar-section {
+    padding: 1em 1em 0.3em;
+    font-size: 0.7em;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--pico-muted-color);
+    white-space: nowrap;
+}
+
+.sidebar-nav ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.sidebar-nav a {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    padding: 0.55em 1em;
     text-decoration: none;
+    white-space: nowrap;
+}
+
+.sidebar-nav a.active {
+    background: var(--pico-primary-focus, var(--pico-secondary-focus));
+    border-right: 2px solid var(--pico-primary);
+}
+
+.main {
+    flex-grow: 1;
+    min-width: 0;
+    padding: 0 1.5em;
+}
+
+.topbar {
+    margin-bottom: 0.5em;
+}
+
+.plugin-container {
+    padding-bottom: 2em;
 }

@@ -16,29 +16,32 @@
             rel="stylesheet"
             href="/css/style.css"
         >
-        
     </head>
 
     <body>
-        <div style="display: flex;">
-            <div id="globalSidenav" class="sidenav">
-                <a href="#">test</a>
-                <a href="#">test</a>
-                <a href="#">test</a>
-            </div>
-            <div style="flex-grow: 1; padding-left: 1em;">
-                <nav>
+        <div class="app">
+            <aside id="sidebar" class="sidebar">
+                <div class="sidebar-header">
+                    <span class="sidebar-logo">S</span>
+                    <strong>SDSM</strong>
+                </div>
+                <nav class="sidebar-nav">
+                    <div class="sidebar-section">Plugins</div>
+                    <ul id="plugin-nav"></ul>
+                </nav>
+            </aside>
+            <div class="main">
+                <nav class="topbar">
                     <ul>
                         <li style="display: flex; align-items: center">
                             <a id="sidebar-btn" href="#">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu-icon lucide-menu" data->
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu-icon lucide-menu">
                                     <path d="M4 5h16"/>
                                     <path d="M4 12h16"/>
                                     <path d="M4 19h16"/>
                                 </svg>
                             </a>
                         </li>
-                        <li><strong>SDSM</strong></li>
                     </ul>
                     <ul>
                         <li style="display: flex; align-items: center; padding-right: 1em;">
@@ -61,8 +64,7 @@
                         </li>
                     </ul>
                 </nav>
-                <div id="current-path">/</div>
-                <table id="file-table"></table>
+                <main id="plugin-container" class="plugin-container"></main>
             </div>
         </div>
 
@@ -70,6 +72,6 @@
         <script src="js/minimal-theme-switcher.js"></script>
 
         <script type="module" src="js/sidenav.js"></script>
-        <script type="module" src="js/file_system.js"></script>
+        <script type="module" src="js/shell.js"></script>
     </body>
 </html>

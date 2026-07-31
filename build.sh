@@ -20,3 +20,19 @@ tsc -p "$FRONTEND_DIR/ts/tsconfig.json" --outDir "$BUILD_DIR/js"
 
 # Build dotnet files
 dotnet build "$BACKEND_DIR/SDSM-Server/SDSM-Server.csproj" -o "$BUILD_DIR"
+
+# Build plugins: copy manifest, compile UI TypeScript, copy other UI assets.
+# (Backend plugin assemblies would additionally be published into backend/.)
+PLUGINS_DIR="$SCRIPT_DIR/SDSM-Plugins"
+mkdir -p "$BUILD_DIR/plugins"
+for plugin in "$PLUGINS_DIR"/*/; do
+    id="$(basename "$plugin")"
+    mkdir -p "$BUILD_DIR/plugins/$id"
+    cp "$plugin/manifest.json" "$BUILD_DIR/plugins/$id/"
+    if [ -d "$plugin/ui" ]; then
+        mkdir -p "$BUILD_DIR/plugins/$id/ui"
+        tsc -p "$plugin/ui/tsconfig.json" --outDir "$BUILD_DIR/plugins/$id/ui"
+        find "$plugin/ui" -type f ! -name '*.ts' ! -name 'tsconfig.json' \
+            -exec cp {} "$BUILD_DIR/plugins/$id/ui/" \;
+    fi
+done

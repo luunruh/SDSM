@@ -1,12 +1,3 @@
-function sidebarButtonClick(): void {
-    var sidenav = document.getElementById("globalSidenav");
-    if (sidenav) {
-        if (parseInt(sidenav.style.width) != 0) {
-            sidenav.style.width = "0px";
-        } else {
-            sidenav.style.width = "200px"
-        }
-    }
-}
-
-document.getElementById("sidebar-btn")?.addEventListener("click", sidebarButtonClick);
+document.getElementById("sidebar-btn")?.addEventListener("click", () => {
+    document.getElementById("sidebar")?.classList.toggle("collapsed");
+});
