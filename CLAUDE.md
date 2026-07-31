@@ -38,9 +38,9 @@ Weitere (Movie-Library à la Plex, Watchlist, Musik-Streaming) sind Plugins.
 - Konkrete Schnittstelle (Manifest, `ISdsmPlugin`, `IFileSystemApi`, UI-`mount`-Contract): siehe docs/ARCHITECTURE.md
 
 ## Befehle
-Build:  <euer Befehl>
-Tests:  <euer Befehl>
-Lint:   <euer Befehl>
+Build:  ./build.sh                          (alles nach ./build, inkl. Plugins)
+Tests:  dotnet test SDSM-Backend/SDSM.sln   (einzelner Test: --filter "FullyQualifiedName~<Name>")
+Lint:   keins konfiguriert (tsc strict prüft beim Build)
 
 ## Design
 Referenz-Mockup: docs/mockups/frontpage.png
