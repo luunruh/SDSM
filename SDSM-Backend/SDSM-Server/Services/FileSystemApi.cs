@@ -104,6 +104,71 @@ namespace Services
             return new FileStream(Resolve(relPath), FileMode.Open, FileAccess.Read, FileShare.Read);
         }
 
+        public void CreateDirectory(string relPath)
+        {
+            Directory.CreateDirectory(ResolveInsideVolume(relPath));
+        }
+
+        public void Delete(string relPath)
+        {
+            string path = ResolveInsideVolume(relPath);
+            if (Directory.Exists(path))
+            {
+                Directory.Delete(path, recursive: true);
+            }
+            else if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+            else
+            {
+                throw new FileNotFoundException(null, relPath);
+            }
+        }
+
+        public void Rename(string relPath, string newName)
+        {
+            if (newName == "" || newName is "." or ".." || newName != Path.GetFileName(newName))
+            {
+                throw new ArgumentException($"Invalid name: {newName}");
+            }
+            string source = ResolveInsideVolume(relPath);
+            string target = Path.Combine(Path.GetDirectoryName(source)!, newName);
+            if (Path.Exists(target))
+            {
+                throw new IOException($"Target already exists: {newName}");
+            }
+            if (Directory.Exists(source))
+            {
+                Directory.Move(source, target);
+            }
+            else if (File.Exists(source))
+            {
+                File.Move(source, target);
+            }
+            else
+            {
+                throw new FileNotFoundException(null, relPath);
+            }
+        }
+
+        public async Task SaveAsync(string relPath, Stream content)
+        {
+            string path = ResolveInsideVolume(relPath);
+            await using var file = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None);
+            await content.CopyToAsync(file);
+        }
+
+        private string ResolveInsideVolume(string relPath)
+        {
+            (_, string remainder) = SplitVolume(Normalize(relPath));
+            if (remainder == "")
+            {
+                throw new ArgumentException("Operation not allowed on a volume root");
+            }
+            return Resolve(relPath);
+        }
+
         private static string Normalize(string relPath)
         {
             return relPath.Trim('/');

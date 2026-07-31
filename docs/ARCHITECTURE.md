@@ -117,6 +117,13 @@ public interface IFileSystemApi
     IReadOnlyList<FileSystemEntry> List(string relPath);
     FileSystemEntry Stat(string relPath);
     Stream OpenRead(string relPath);
+
+    // Schreiboperationen verlangen einen Pfad *innerhalb* eines Volumes —
+    // Volume-Wurzeln selbst sind unveränderlich.
+    void CreateDirectory(string relPath);
+    void Delete(string relPath);              // Datei oder Ordner (rekursiv)
+    void Rename(string relPath, string newName);
+    Task SaveAsync(string relPath, Stream content);
 }
 
 public class FileSystemEntry
@@ -129,16 +136,19 @@ public class FileSystemEntry
 }
 ```
 
-Schreiboperationen (Upload, Löschen, Umbenennen) kommen später in
-dieselbe Schnittstelle.
-
 ### Frontend: `/api/fs`-Endpoints (Kern)
 
 - `GET /api/fs/list/{*path}` → JSON-Array von `FileSystemEntry`
   (camelCase: `name`, `isDirectory`, `sizeBytes`, `kind`, `modifiedUtc`)
 - `GET /api/fs/download/{*path}` → Datei-Stream
+- `POST /api/fs/mkdir/{*path}` → 204
+- `PUT /api/fs/upload/{*path}` (Body = Dateiinhalt, roh) → 204
+- `DELETE /api/fs/delete/{*path}` → 204
+- `POST /api/fs/rename/{*path}` (Body: `{"newName": "…"}`) → 204;
+  409, wenn das Ziel existiert
 
-Diese ersetzen die alten Endpoints `/files` und `/downloadfile`.
+Fehlerkonvention aller Endpoints: 400 bei ungültigem Pfad/Namen
+(inkl. Traversal), 404 bei unbekanntem Volume oder fehlendem Eintrag.
 
 ## UI-Auslieferung
 

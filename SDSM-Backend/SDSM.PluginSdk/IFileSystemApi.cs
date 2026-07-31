@@ -10,4 +10,11 @@ public interface IFileSystemApi
     IReadOnlyList<FileSystemEntry> List(string relPath);
     FileSystemEntry Stat(string relPath);
     Stream OpenRead(string relPath);
+
+    // Write operations require a path inside a volume — volume roots
+    // themselves cannot be created, deleted, renamed, or overwritten.
+    void CreateDirectory(string relPath);
+    void Delete(string relPath);
+    void Rename(string relPath, string newName);
+    Task SaveAsync(string relPath, Stream content);
 }

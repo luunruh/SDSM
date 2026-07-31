@@ -133,6 +133,86 @@ public class FileSystemApiTests : IDisposable
     }
 
     [Fact]
+    public void CreateDirectory_CreatesNestedPath()
+    {
+        _fs.CreateDirectory("Volume 1/neu/tiefer");
+        Assert.True(Directory.Exists(Path.Combine(_tempDir, "vol1", "neu", "tiefer")));
+    }
+
+    [Fact]
+    public void Delete_RemovesFileAndDirectoryRecursively()
+    {
+        _fs.Delete("Volume 1/movie.mkv");
+        Assert.False(File.Exists(Path.Combine(_tempDir, "vol1", "movie.mkv")));
+
+        _fs.Delete("Volume 1/sub");
+        Assert.False(Directory.Exists(Path.Combine(_tempDir, "vol1", "sub")));
+    }
+
+    [Fact]
+    public void Delete_MissingPath_Throws()
+    {
+        Assert.Throws<FileNotFoundException>(() => _fs.Delete("Volume 1/nope"));
+    }
+
+    [Fact]
+    public void Rename_MovesFileWithinDirectory()
+    {
+        _fs.Rename("Volume 1/movie.mkv", "film.mkv");
+        Assert.True(File.Exists(Path.Combine(_tempDir, "vol1", "film.mkv")));
+        Assert.False(File.Exists(Path.Combine(_tempDir, "vol1", "movie.mkv")));
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(".")]
+    [InlineData("..")]
+    [InlineData("a/b")]
+    [InlineData("../escape")]
+    public void Rename_InvalidNewName_IsRejected(string newName)
+    {
+        Assert.Throws<ArgumentException>(() => _fs.Rename("Volume 1/movie.mkv", newName));
+    }
+
+    [Fact]
+    public void Rename_ExistingTarget_Throws()
+    {
+        Assert.Throws<IOException>(() => _fs.Rename("Volume 1/movie.mkv", "sub"));
+    }
+
+    [Fact]
+    public async Task SaveAsync_WritesAndOverwrites()
+    {
+        using (var content = new MemoryStream("neu"u8.ToArray()))
+        {
+            await _fs.SaveAsync("Volume 1/upload.txt", content);
+        }
+        Assert.Equal("neu", File.ReadAllText(Path.Combine(_tempDir, "vol1", "upload.txt")));
+
+        using (var content = new MemoryStream("v2"u8.ToArray()))
+        {
+            await _fs.SaveAsync("Volume 1/upload.txt", content);
+        }
+        Assert.Equal("v2", File.ReadAllText(Path.Combine(_tempDir, "vol1", "upload.txt")));
+    }
+
+    [Fact]
+    public async Task WriteOperations_OnVolumeRoot_AreRejected()
+    {
+        Assert.Throws<ArgumentException>(() => _fs.CreateDirectory("Volume 1"));
+        Assert.Throws<ArgumentException>(() => _fs.Delete("Volume 1"));
+        Assert.Throws<ArgumentException>(() => _fs.Rename("Volume 1", "x"));
+        await Assert.ThrowsAsync<ArgumentException>(() => _fs.SaveAsync("Volume 1", Stream.Null));
+    }
+
+    [Fact]
+    public void WriteOperations_EscapingVolume_AreRejected()
+    {
+        Assert.Throws<ArgumentException>(() => _fs.CreateDirectory("Volume 1/../outside"));
+        Assert.Throws<ArgumentException>(() => _fs.Delete("Volume 1/../outside"));
+    }
+
+    [Fact]
     public void GetVolumes_ReportsCapacity()
     {
         var volumes = _fs.GetVolumes();
