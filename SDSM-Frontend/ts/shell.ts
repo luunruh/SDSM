@@ -41,7 +41,17 @@ function encodePath(path: string): string {
     return path.split("/").map(encodeURIComponent).join("/");
 }
 
+interface AuthStatus {
+    authenticated: boolean;
+    setupRequired: boolean;
+    username: string | null;
+}
+
 async function checkOk(op: string, response: Response): Promise<Response> {
+    if (response.status === 401) {
+        // Session expired — back to the login screen
+        location.reload();
+    }
     if (!response.ok) {
         throw new Error(`${op} failed: ${response.status}`);
     }
@@ -102,10 +112,68 @@ async function activate(plugin: PluginInfo, navLink: HTMLElement): Promise<void>
     }
 }
 
+function showAuthForm(setup: boolean): void {
+    const container = document.getElementById("plugin-container")!;
+    container.innerHTML = `
+        <article class="auth-card">
+            <h3>${setup ? "Admin-Konto anlegen" : "Anmelden"}</h3>
+            <form id="auth-form">
+                <input name="username" placeholder="Benutzername" required
+                       autocomplete="${setup ? "off" : "username"}">
+                <input name="password" type="password" placeholder="Passwort" required
+                       ${setup ? 'minlength="8"' : ""}
+                       autocomplete="${setup ? "new-password" : "current-password"}">
+                <button type="submit">${setup ? "Anlegen" : "Anmelden"}</button>
+                <p id="auth-error" class="auth-error"></p>
+            </form>
+        </article>`;
+
+    const form = container.querySelector<HTMLFormElement>("#auth-form")!;
+    const error = container.querySelector<HTMLElement>("#auth-error")!;
+    form.addEventListener("submit", async e => {
+        e.preventDefault();
+        const data = new FormData(form);
+        const response = await fetch(`/api/auth/${setup ? "setup" : "login"}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                username: data.get("username"),
+                password: data.get("password"),
+            }),
+        });
+        if (response.ok) {
+            initShell();
+        } else {
+            error.textContent = setup
+                ? "Anlegen fehlgeschlagen (Passwort: mindestens 8 Zeichen)."
+                : "Benutzername oder Passwort falsch.";
+        }
+    });
+}
+
+function showUser(username: string | null): void {
+    const item = document.getElementById("topbar-user")!;
+    item.hidden = false;
+    document.getElementById("topbar-username")!.textContent = username ?? "";
+    document.getElementById("logout-btn")!.addEventListener("click", async e => {
+        e.preventDefault();
+        await fetch("/api/auth/logout", { method: "POST" });
+        location.reload();
+    });
+}
+
 async function initShell(): Promise<void> {
+    const status: AuthStatus = await (await fetch("/api/auth/status")).json();
+    if (status.setupRequired || !status.authenticated) {
+        showAuthForm(status.setupRequired);
+        return;
+    }
+    showUser(status.username);
+
     const response = await fetch("/api/plugins");
     const plugins: PluginInfo[] = await response.json();
     const nav = document.getElementById("plugin-nav")!;
+    nav.innerHTML = "";
 
     let first = true;
     for (const plugin of plugins.filter(p => p.ui !== null)) {

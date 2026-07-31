@@ -183,6 +183,26 @@ Das Plugin rendert ausschließlich in den übergebenen `container`
 (Content-Bereich der Shell) und spricht Backends nur über `ctx` an —
 keine hartkodierten Kern-URLs im Plugin-Code.
 
+## Authentifizierung
+
+Single-Admin mit Cookie-Session. Die Zugangsdaten (Benutzername +
+PBKDF2-Hash) liegen in einer JSON-Datei (`Auth:File`, Default
+`<AppDir>/auth.json`). Existiert sie nicht, verlangt die Shell beim
+ersten Aufruf das Anlegen des Admin-Kontos (`POST /api/auth/setup`,
+nur solange kein Konto existiert).
+
+- `GET /api/auth/status` → `{ authenticated, setupRequired, username }`
+- `POST /api/auth/login` / `POST /api/auth/logout`
+- Alle Endpoints (inkl. Plugin-Routen) verlangen die Session per
+  Fallback-Policy; nur die Auth-Endpoints sind `[AllowAnonymous]`.
+  Statische Dateien (Shell, Plugin-UI-Assets) werden vor der
+  Authorization-Middleware serviert, damit die Login-Seite lädt.
+- API-Antwort bei fehlender Session: 401 (kein Redirect); die Shell
+  lädt dann die Login-Ansicht.
+
+Bewusst noch offen: CSRF-Schutz über SameSite=Lax hinaus,
+Rate-Limiting fürs Login, Mehrbenutzer/Rollen.
+
 ## Repo-Layout & Build
 
 ```

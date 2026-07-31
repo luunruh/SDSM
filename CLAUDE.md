@@ -36,6 +36,7 @@ Weitere (Movie-Library à la Plex, Watchlist, Musik-Streaming) sind Plugins.
 - Kernfunktionen kommen nie ins Plugin, Plugin-Logik nie in den Kern
 - Jedes Plugin spricht nur über die Plugin-API mit dem System
 - Konkrete Schnittstelle (Manifest, `ISdsmPlugin`, `IFileSystemApi`, UI-`mount`-Contract): siehe docs/ARCHITECTURE.md
+- Auth: Single-Admin, Cookie-Session; Zugangsdaten in `auth.json` neben dem Server-Binary (Pfad: Config `Auth:File`). Alle Endpoints verlangen die Session (Fallback-Policy), statische Dateien nicht.
 
 ## Befehle
 Build:  ./build.sh                          (alles nach ./build, inkl. Plugins)
