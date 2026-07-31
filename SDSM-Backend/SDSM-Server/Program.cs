@@ -2,25 +2,34 @@ using Microsoft.Extensions.FileProviders;
 using Plugins;
 using SDSM.PluginSdk;
 
-string rootDir = "";
-if (args.Length == 1) {
-    rootDir = args[0];
-}
-if (string.IsNullOrEmpty(rootDir)) {
-    rootDir = Directory.GetCurrentDirectory();
-}
-
 string AppPath = System.Reflection.Assembly.GetEntryAssembly()?.Location ?? "";
 string AppDir = Path.GetDirectoryName(AppPath) ?? "";
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Volumes come from the "Volumes" config section (name -> path); a
+// single CLI argument is a shorthand for one volume named after the
+// directory. Fallback: the current directory.
+var volumes = new Dictionary<string, string>();
+foreach (var child in builder.Configuration.GetSection("Volumes").GetChildren()) {
+    if (child.Value != null) {
+        volumes[child.Key] = child.Value;
+    }
+}
+if (args.Length == 1) {
+    string path = Path.GetFullPath(args[0]);
+    volumes = new Dictionary<string, string> { [VolumeNameFor(path)] = path };
+}
+if (volumes.Count == 0) {
+    string cwd = Directory.GetCurrentDirectory();
+    volumes[VolumeNameFor(cwd)] = cwd;
+}
+
 string pluginsDir = builder.Configuration["Plugins:Directory"] ?? Path.Combine(AppDir, "plugins");
 var pluginLoader = PluginLoader.LoadFrom(pluginsDir);
 
 builder.Services.AddControllers();
-builder.Services.AddSingleton(new Config { RootDir = rootDir });
-builder.Services.AddSingleton<IFileSystemApi>(new Services.FileSystemApi(rootDir));
+builder.Services.AddSingleton<IFileSystemApi>(new Services.FileSystemApi(volumes));
 builder.Services.AddSingleton(pluginLoader);
 pluginLoader.ConfigureServices(builder.Services);
 
@@ -64,3 +73,8 @@ foreach (LoadedPlugin plugin in pluginLoader.Plugins) {
 }
 
 app.Run();
+
+static string VolumeNameFor(string path) {
+    string name = Path.GetFileName(Path.TrimEndingDirectorySeparator(path));
+    return string.IsNullOrEmpty(name) ? "Root" : name;
+}

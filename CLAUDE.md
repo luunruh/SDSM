@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-SDSM (Simple Data Storage Manager) is a web-based file browser: an ASP.NET Core backend (net10.0) serves a REST API plus a vanilla-TypeScript frontend styled with Pico.css. The server is started with a root directory argument and lets users browse and download files under it.
+SDSM (Simple Data Storage Manager) is a web-based file browser: an ASP.NET Core backend (net10.0) serves a REST API plus a vanilla-TypeScript frontend styled with Pico.css. The filesystem is exposed as named volumes (configured in the `Volumes` section of appsettings.json as name → host path; a single CLI argument is shorthand for one volume).
 
 ## Build & Run
 

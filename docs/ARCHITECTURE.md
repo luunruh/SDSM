@@ -96,16 +96,24 @@ public interface ISdsmPlugin
 ## Dateisystem-Zugriff
 
 Plugins greifen **nie** direkt mit `System.IO` auf das Dateisystem zu.
-Der Kern stellt eine gescopte Filesystem-API bereit; alle Pfade sind
-relativ zum konfigurierten `RootDir`, und jeder Pfad wird kanonisiert
-und gegen `RootDir` geprüft (Path-Traversal wird zentral hier
-abgefangen — Anfragen außerhalb ergeben 400/`ArgumentException`).
+Der Kern stellt eine gescopte Filesystem-API bereit.
+
+Das Dateisystem ist eine Menge **benannter Volumes** (konfiguriert in
+der `Volumes`-Section von appsettings.json als `Name → Hostpfad`; ein
+einzelnes CLI-Argument ist die Kurzform für genau ein Volume, benannt
+nach dem Verzeichnis). Pfade in der API sind `Volumename/rel/pfad`;
+der Leerstring listet die Volumes selbst (als Einträge mit
+`kind: "Volume"`). Jeder Pfad wird kanonisiert und gegen die Wurzel
+seines Volumes geprüft — Path-Traversal wird zentral hier abgefangen
+(`ArgumentException`/400), unbekannte Volumes ergeben
+`DirectoryNotFoundException`/404.
 
 ### Backend: `IFileSystemApi` (per DI injizierbar)
 
 ```csharp
 public interface IFileSystemApi
 {
+    IReadOnlyList<VolumeInfo> GetVolumes();   // Name, TotalBytes, AvailableBytes
     IReadOnlyList<FileSystemEntry> List(string relPath);
     FileSystemEntry Stat(string relPath);
     Stream OpenRead(string relPath);

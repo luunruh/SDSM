@@ -23,15 +23,56 @@ namespace Services
             [".nfo"] = "Info-Datei",
         };
 
-        private readonly string _root;
+        private readonly List<(string Name, string Root)> _volumes;
 
-        public FileSystemApi(string rootDir)
+        public FileSystemApi(IReadOnlyDictionary<string, string> volumes)
         {
-            _root = Path.TrimEndingDirectorySeparator(Path.GetFullPath(rootDir));
+            _volumes = volumes
+                .Select(v => (v.Key, Path.TrimEndingDirectorySeparator(Path.GetFullPath(v.Value))))
+                .OrderBy(v => v.Key, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+        }
+
+        public IReadOnlyList<VolumeInfo> GetVolumes()
+        {
+            var drives = new List<DriveInfo>();
+            foreach (DriveInfo drive in DriveInfo.GetDrives())
+            {
+                try
+                {
+                    if (drive.IsReady)
+                    {
+                        drives.Add(drive);
+                    }
+                }
+                catch (IOException)
+                {
+                    // Pseudo mounts can refuse queries; skip them
+                }
+            }
+
+            return _volumes.Select(volume =>
+            {
+                DriveInfo? mount = drives
+                    .Where(d => IsUnderMount(volume.Root, d.RootDirectory.FullName))
+                    .OrderByDescending(d => d.RootDirectory.FullName.Length)
+                    .FirstOrDefault();
+                return new VolumeInfo
+                {
+                    Name = volume.Name,
+                    TotalBytes = mount?.TotalSize ?? 0,
+                    AvailableBytes = mount?.AvailableFreeSpace ?? 0,
+                };
+            }).ToList();
         }
 
         public IReadOnlyList<FileSystemEntry> List(string relPath)
         {
+            relPath = Normalize(relPath);
+            if (relPath == "")
+            {
+                return _volumes.Select(VolumeEntry).ToList();
+            }
             var dir = new DirectoryInfo(Resolve(relPath));
             return dir.EnumerateFileSystemInfos()
                 .OrderByDescending(info => info is DirectoryInfo)
@@ -42,6 +83,11 @@ namespace Services
 
         public FileSystemEntry Stat(string relPath)
         {
+            (string volumeName, string rest) = SplitVolume(Normalize(relPath));
+            if (rest == "")
+            {
+                return VolumeEntry(Volume(volumeName));
+            }
             string fullPath = Resolve(relPath);
             FileSystemInfo info = Directory.Exists(fullPath)
                 ? new DirectoryInfo(fullPath)
@@ -58,18 +104,77 @@ namespace Services
             return new FileStream(Resolve(relPath), FileMode.Open, FileAccess.Read, FileShare.Read);
         }
 
-        // Canonicalizes relPath against the root and rejects anything
-        // escaping it — the central path-traversal guard for all plugins.
+        private static string Normalize(string relPath)
+        {
+            return relPath.Trim('/');
+        }
+
+        private static (string VolumeName, string Remainder) SplitVolume(string relPath)
+        {
+            if (relPath == "")
+            {
+                throw new ArgumentException("Path must start with a volume name");
+            }
+            int slash = relPath.IndexOf('/');
+            return slash < 0 ? (relPath, "") : (relPath[..slash], relPath[(slash + 1)..]);
+        }
+
+        private (string Name, string Root) Volume(string name)
+        {
+            foreach (var volume in _volumes)
+            {
+                if (volume.Name == name)
+                {
+                    return volume;
+                }
+            }
+            throw new DirectoryNotFoundException($"Unknown volume: {name}");
+        }
+
+        // Canonicalizes relPath against its volume root and rejects
+        // anything escaping it — the central path-traversal guard for
+        // all plugins.
         private string Resolve(string relPath)
         {
-            string fullPath = Path.TrimEndingDirectorySeparator(
-                Path.GetFullPath(Path.Combine(_root, relPath)));
-            if (fullPath != _root
-                && !fullPath.StartsWith(_root + Path.DirectorySeparatorChar, StringComparison.Ordinal))
+            (string volumeName, string rest) = SplitVolume(Normalize(relPath));
+            string root = Volume(volumeName).Root;
+            if (rest == "")
             {
-                throw new ArgumentException($"Path escapes the root directory: {relPath}");
+                return root;
+            }
+            string fullPath = Path.TrimEndingDirectorySeparator(
+                Path.GetFullPath(Path.Combine(root, rest)));
+            if (fullPath != root
+                && !fullPath.StartsWith(root + Path.DirectorySeparatorChar, StringComparison.Ordinal))
+            {
+                throw new ArgumentException($"Path escapes its volume: {relPath}");
             }
             return fullPath;
+        }
+
+        private static bool IsUnderMount(string path, string mountRoot)
+        {
+            mountRoot = Path.TrimEndingDirectorySeparator(mountRoot);
+            if (mountRoot == "")
+            {
+                return true; // filesystem root
+            }
+            return path == mountRoot
+                || mountRoot == Path.DirectorySeparatorChar.ToString()
+                || path.StartsWith(mountRoot + Path.DirectorySeparatorChar, StringComparison.Ordinal);
+        }
+
+        private static FileSystemEntry VolumeEntry((string Name, string Root) volume)
+        {
+            var dir = new DirectoryInfo(volume.Root);
+            return new FileSystemEntry
+            {
+                Name = volume.Name,
+                IsDirectory = true,
+                SizeBytes = null,
+                Kind = "Volume",
+                ModifiedUtc = dir.Exists ? dir.LastWriteTimeUtc : default,
+            };
         }
 
         private static FileSystemEntry ToEntry(FileSystemInfo info)
