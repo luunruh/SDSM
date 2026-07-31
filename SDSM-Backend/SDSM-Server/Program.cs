@@ -16,7 +16,7 @@ foreach (var child in builder.Configuration.GetSection("Volumes").GetChildren())
         volumes[child.Key] = child.Value;
     }
 }
-if (args.Length == 1) {
+if (args.Length == 1 && !args[0].StartsWith('-')) {
     string path = Path.GetFullPath(args[0]);
     volumes = new Dictionary<string, string> { [VolumeNameFor(path)] = path };
 }

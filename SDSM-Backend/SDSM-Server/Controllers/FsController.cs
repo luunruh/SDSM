@@ -41,6 +41,7 @@ public class FsController : ControllerBase
     [HttpPut]
     [Route("upload/{*path}")]
     [DisableRequestSizeLimit]
+    [DisableFormValueModelBinding]
     public async Task<IResult> Upload(string path)
     {
         try
