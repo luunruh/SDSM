@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <!-- Distro dotnet packages ship without prune-package data (NETSDK1226) -->
+    <AllowMissingPrunePackageData>true</AllowMissingPrunePackageData>
+  </PropertyGroup>
+</Project>
