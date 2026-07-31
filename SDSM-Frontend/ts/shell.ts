@@ -13,6 +13,10 @@ interface PluginUiContext {
     fs: {
         list(path: string): Promise<FileSystemEntry[]>;
         downloadUrl(path: string): string;
+        mkdir(path: string): Promise<void>;
+        upload(path: string, content: Blob): Promise<void>;
+        delete(path: string): Promise<void>;
+        rename(path: string, newName: string): Promise<void>;
     };
 }
 
@@ -36,6 +40,13 @@ function encodePath(path: string): string {
     return path.split("/").map(encodeURIComponent).join("/");
 }
 
+async function checkOk(op: string, response: Response): Promise<Response> {
+    if (!response.ok) {
+        throw new Error(`${op} failed: ${response.status}`);
+    }
+    return response;
+}
+
 function makeContext(pluginId: string): PluginUiContext {
     return {
         pluginBase: `/api/plugins/${pluginId}`,
@@ -43,14 +54,30 @@ function makeContext(pluginId: string): PluginUiContext {
         fs: {
             async list(path: string): Promise<FileSystemEntry[]> {
                 const url = path === "" ? "/api/fs/list" : `/api/fs/list/${encodePath(path)}`;
-                const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error(`fs.list(${path}) failed: ${response.status}`);
-                }
-                return response.json();
+                return (await checkOk(`fs.list(${path})`, await fetch(url))).json();
             },
             downloadUrl(path: string): string {
                 return `/api/fs/download/${encodePath(path)}`;
+            },
+            async mkdir(path: string): Promise<void> {
+                await checkOk(`fs.mkdir(${path})`,
+                    await fetch(`/api/fs/mkdir/${encodePath(path)}`, { method: "POST" }));
+            },
+            async upload(path: string, content: Blob): Promise<void> {
+                await checkOk(`fs.upload(${path})`,
+                    await fetch(`/api/fs/upload/${encodePath(path)}`, { method: "PUT", body: content }));
+            },
+            async delete(path: string): Promise<void> {
+                await checkOk(`fs.delete(${path})`,
+                    await fetch(`/api/fs/delete/${encodePath(path)}`, { method: "DELETE" }));
+            },
+            async rename(path: string, newName: string): Promise<void> {
+                await checkOk(`fs.rename(${path})`,
+                    await fetch(`/api/fs/rename/${encodePath(path)}`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ newName }),
+                    }));
             },
         },
     };

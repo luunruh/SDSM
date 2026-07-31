@@ -169,6 +169,10 @@ interface PluginUiContext {
     fs: {                 // Client für die Kern-Filesystem-API
         list(path: string): Promise<FileSystemEntry[]>;
         downloadUrl(path: string): string;
+        mkdir(path: string): Promise<void>;
+        upload(path: string, content: Blob): Promise<void>;
+        delete(path: string): Promise<void>;
+        rename(path: string, newName: string): Promise<void>;
     };
 }
 ```
