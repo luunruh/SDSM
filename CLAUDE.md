@@ -26,3 +26,21 @@ Important: the server locates frontend assets **relative to its own assembly loc
   - `GET /downloadfile/{*path}` — streams the file as `application/octet-stream`
   - Both have known **path-traversal TODOs** — paths are combined with `RootDir` unchecked.
 - **Frontend** (`SDSM-Frontend/`): no framework, no bundler, no npm. TypeScript in `ts/` compiles to ES modules loaded directly by `static/index.html`. `file_system.ts` fetches `/files/...` and renders the file table (directories navigate, files link to `/downloadfile/...`). The `FileSystemEntry` interface in `ts/file_system_entry.ts` must stay in sync with the C# model in `Models/FileSystemEntry.cs`. `css/pico.min.css` and `js/minimal-theme-switcher.js` are vendored third-party files — don't edit them.
+
+## Was SDSM ist
+NAS-Betriebssystem-Oberfläche: hostet das Dateisystem als Webinterface.
+Plugin-basiert — Kern liefert Explorer + System-Diagnostics, alles
+Weitere (Movie-Library à la Plex, Watchlist, Musik-Streaming) sind Plugins.
+
+## Architektur-Regeln
+- Kernfunktionen kommen nie ins Plugin, Plugin-Logik nie in den Kern
+- Jedes Plugin spricht nur über die Plugin-API mit dem System
+- Konkrete Schnittstelle (Manifest, `ISdsmPlugin`, `IFileSystemApi`, UI-`mount`-Contract): siehe docs/ARCHITECTURE.md
+
+## Befehle
+Build:  <euer Befehl>
+Tests:  <euer Befehl>
+Lint:   <euer Befehl>
+
+## Design
+Referenz-Mockup: docs/mockups/frontpage.png
